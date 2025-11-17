@@ -40,6 +40,7 @@ import car_image1 from "./car_image1.png"
 import car_image2 from "./car_image2.png"
 import car_image3 from "./car_image3.png"
 import car_image4 from "./car_image4.png"
+import default_user from "./default_user.png"
 
 export const cityList = ['New York', 'Los Angeles', 'Houston', 'Chicago']
 
@@ -85,7 +86,8 @@ export const assets = {
     user_profile,
     car_image2,
     car_image3,
-    car_image4
+    car_image4,
+    default_user
 }
 
 export const menuLinks = [
@@ -103,7 +105,7 @@ export const ownerMenuLinks = [
 
 export const dummyUserData = {
   "_id": "6847f7cab3d8daecdb517095",
-  "name": "GreatStack",
+  "name": "Kartik Kaushal",
   "email": "admin@example.com",
   "role": "owner",
   "image": user_profile,
@@ -186,8 +188,8 @@ export const dummyMyBookingsData = [
         "car": dummyCarData[0],
         "user": "6847f7cab3d8daecdb517095",
         "owner": "6847f7cab3d8daecdb517095",
-        "pickupDate": "2025-06-13T00:00:00.000Z",
-        "returnDate": "2025-06-14T00:00:00.000Z",
+        "pickupDate": "13-06-2025T00:00:00.000Z",
+        "returnDate": "14-06-2025T00:00:00.000Z",
         "status": "confirmed",
         "price": 440,
         "createdAt": "2025-06-10T12:57:48.244Z",
@@ -197,8 +199,8 @@ export const dummyMyBookingsData = [
         "car": dummyCarData[1],
         "user": "6847f7cab3d8daecdb517095",
         "owner": "67fe3467ed8a8fe17d0ba6e2",
-        "pickupDate": "2025-06-12T00:00:00.000Z",
-        "returnDate": "2025-06-12T00:00:00.000Z",
+        "pickupDate": "12-06-2025T00:00:00.000Z",
+        "returnDate": "12-06-2025T00:00:00.000Z",
         "status": "pending",
         "price": 130,
         "createdAt": "2025-06-10T12:57:25.613Z",
@@ -208,8 +210,8 @@ export const dummyMyBookingsData = [
         "car": dummyCarData[2],
         "user": "6847f7cab3d8daecdb517095",
         "owner": "67fe3467ed8a8fe17d0ba6e2",
-        "pickupDate": "2025-06-11T00:00:00.000Z",
-        "returnDate": "2025-06-12T00:00:00.000Z",
+        "pickupDate": "11-06-2025T00:00:00.000Z",
+        "returnDate": "12-06-2025T00:00:00.000Z",
         "status": "pending",
         "price": 600,
         "createdAt": "2025-06-10T09:55:06.379Z",
@@ -219,8 +221,8 @@ export const dummyMyBookingsData = [
         "car": dummyCarData[3],
         "user": "6847f7cab3d8daecdb517095",
         "owner": "6847f7cab3d8daecdb517095",
-        "pickupDate": "2025-06-11T00:00:00.000Z",
-        "returnDate": "2025-06-12T00:00:00.000Z",
+        "pickupDate": "11-06-2025T00:00:00.000Z",
+        "returnDate": "12-06-2025T00:00:00.000Z",
         "status": "confirmed",
         "price": 440,
         "createdAt": "2025-06-10T09:44:25.410Z",
