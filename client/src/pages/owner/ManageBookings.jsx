@@ -1,154 +1,77 @@
-import React from "react";
-import TitleOwner from "../../components/owner/TitleOwner";
-import { assets, dummyMyBookingsData } from "../../assets/assets";
+import React, { useState, useEffect } from "react";
+import { dummyMyBookingsData } from "../../assets/assets.js";
+import TitleOwner from "../../components/owner/TitleOwner.jsx"
 
 const ManageBookings = () => {
-  const bookings = dummyMyBookingsData; // Replace with API later
 
-  // Robust parser for booking date strings.
-  // Handles:
-  //  - ISO strings ("2025-06-10T12:57:48.244Z")
-  //  - DD-MM-YYYYT... (e.g. "13-06-2025T00:00:00.000Z")
-  //  - plain date strings or Date objects
-  const parseBookingDate = (dateInput) => {
-    if (!dateInput) return null;
+  const currency = import.meta.env.VITE_CURRENCY
+  const [bookings, setBookings] = useState([])
 
-    // If already a Date instance
-    if (dateInput instanceof Date) return dateInput;
+  const fetchOwnerBookings = async ()=> {
+    setBookings(dummyMyBookingsData)
+  }
 
-    // If it's numeric timestamp
-    if (typeof dateInput === "number") return new Date(dateInput);
+  useEffect(() => {
+    fetchOwnerBookings()
+  }, [])
+  
 
-    // Try native parse first (works for standard ISO)
-    const tryNative = new Date(dateInput);
-    if (!isNaN(tryNative.getTime())) return tryNative;
+  return(
 
-    // If native parse failed, try to detect DD-MM-YYYY or DD/MM/YYYY before 'T'
-    // Example: "13-06-2025T00:00:00.000Z" or "13/06/2025"
-    const dateOnly = String(dateInput).split("T")[0];
-    const sep = dateOnly.includes("-") ? "-" : dateOnly.includes("/") ? "/" : null;
+    <div className='px-4 pt-10 md:px-10 w-full'>
+      <TitleOwner title='Manage Bookings' subTitle='Track all customer bookings, approve or cancel requests, and manage booking status.' />
 
-    if (sep) {
-      const parts = dateOnly.split(sep).map((p) => p.trim());
-      // If looks like DD-MM-YYYY (day length 2, year length 4)
-      if (parts.length >= 3) {
-        // assume format is DD-MM-YYYY or DD/MM/YYYY
-        const [d, m, y] = parts;
-        // create ISO formatted date string "YYYY-MM-DD" and append time part if present
-        const timePart = String(dateInput).includes("T") ? "T" + String(dateInput).split("T")[1] : "";
-        const iso = `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}${timePart}`;
-        const dt = new Date(iso);
-        if (!isNaN(dt.getTime())) return dt;
-      }
-    }
+      <div className=' w-full rounded-md overflow-hidden border border-borderColor mt-6'>
+        <table className='w-full border-collapse text-left text-sm text-gray-600'>
+          <thead className='text-gray-500'>
+            <tr className=''>
+              <th className='p-3 font-medium '>Car</th>
+              <th className='p-3 font-medium max-md:hidden'>Date Range</th>
+              <th className='p-3 font-medium'>Total</th>
+              <th className='p-3 font-medium max-md:hidden'>Payment</th>
+              <th className='p-3 font-medium'>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bookings.map( (booking, index)=> (
+              <tr key={index} className='border-t border-borderColor text-gray-500'>
 
-    // As a last resort try to replace '-' with '/' and parse (some browsers parse dd/mm/yyyy)
-    const swapped = String(dateInput).replace(/-/g, "/");
-    const finalTry = new Date(swapped);
-    if (!isNaN(finalTry.getTime())) return finalTry;
+                <td className='p-3 flex items-center gap-3'>
+                  <img src={booking.car.image} alt="" className='h-12 w-12 aspect-square rounded-md object-cover'/>
+                  <p className='font-medium max-md:hidden'>{booking.car.brand} {booking.car.model}</p>
+                </td>
 
-    // If everything fails return null
-    return null;
-  };
+                <td className='p-3 max-md:hidden'>
+                  {booking.pickupDate.split('T')[0]} to {booking.returnDate.split('T')[0]}
+                </td>
+                
+                <td className='p-3'>
+                  {currency}{booking.price}
+                </td>
+                
+                <td className='p-3 max-md:hidden'>
+                  <span className='bg-gray-100 px-3 py-1 rounded-full text-xs'>offline</span>
+                </td>
+                
+                <td className='p-3'>
+                  {booking.status === 'pending' ? (
+                    <select value={booking.status} className='px-2 py-1.5 mt-1 text-gray-500 border border-borderColor rounded-md outline-none'>
+                      <option value="pending">Pending</option>
+                      <option value="cancelled">Cancelled</option>
+                      <option value="confirmed">Confirmed</option>
+                    </select>
+                  ) : (
+                    <span className={`px-3 py-2 rounded-full text-xs font-semibold ${booking.status === 'confirmed' ? 'bg-green-100 text-green-500' : 'bg-red-100 text-red-500'}`}>{booking.status}</span>
+                  )}
+                </td>
 
-  // Format date for UI (M/D/YYYY). Returns empty string if invalid.
-  const formatDate = (dateStr) => {
-  const d = parseBookingDate(dateStr);
-  if (!d) return "";
-
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const year = d.getFullYear();
-
-  return `${day}/${month}/${year}`;
-};
-
-
-  // Status Colors
-  const statusColors = {
-    confirmed: "bg-green-100 text-green-700",
-    completed: "bg-blue-100 text-blue-700",
-    pending: "bg-yellow-100 text-yellow-700",
-    cancelled: "bg-red-100 text-red-700",
-    available: "bg-green-100 text-green-700",
-  };
-
-  return (
-    <div className="px-4 pt-10 md:px-10 flex-1">
-      <TitleOwner
-        title="Manage Bookings"
-        subTitle="Track all customer bookings, approve or cancel requests, and manage booking statuses"
-      />
-
-      {/* Table */}
-      <div className="mt-8 w-full border border-borderColor rounded-md overflow-hidden">
-        {/* Header */}
-        <div
-          className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr] bg-gray-50 py-3 px-4
-                        text-sm font-medium text-gray-600 border-b border-borderColor"
-        >
-          <p>Car</p>
-          <p>Date Range</p>
-          <p>Total</p>
-          <p>Status</p>
-          <p className="text-center">Actions</p>
-        </div>
-
-        {/* Rows */}
-        {bookings.map((booking) => (
-          <div
-            key={booking._id}
-            className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr] items-center py-5 px-4
-                       border-b border-borderColor last:border-b-0"
-          >
-            {/* Car Info */}
-            <div className="flex items-center gap-4">
-              <img
-                src={booking.car.image}
-                alt="car"
-                className="w-16 h-12 rounded-md object-cover"
-              />
-              <div>
-                <p className="font-medium">
-                  {booking.car.brand} {booking.car.model}
-                </p>
-                <p className="text-gray-500 text-sm">
-                  {booking.car.seating_capacity} seats • {booking.car.transmission}
-                </p>
-              </div>
-            </div>
-
-            {/* Date Range */}
-            <p className="text-gray-700">
-              {formatDate(booking.pickupDate)} To {formatDate(booking.returnDate)}
-            </p>
-
-            {/* Price */}
-            <p className="font-medium">₹{booking.price}</p>
-
-            {/* Status */}
-            <div>
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  statusColors[booking.status] || "bg-gray-100 text-gray-700"
-                }`}
-              >
-                {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-              </span>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center justify-center">
-              <select className="border border-borderColor text-sm px-3 py-1 rounded-md bg-white">
-                <option>Cancel</option>
-                <option>Confirm</option>
-                <option>Complete</option>
-              </select>
-            </div>
-          </div>
-        ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
+
   );
 };
 

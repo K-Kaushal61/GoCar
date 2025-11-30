@@ -11,8 +11,6 @@ import Dashboard from './pages/owner/Dashboard.jsx'
 import AddCar from './pages/owner/AddCar.jsx'
 import ManageBookings from './pages/owner/ManageBookings'
 import ManageCars from './pages/owner/ManageCars'
-
-// ✅ Import Login component
 import Login from './components/Login'
 
 const App = () => {
@@ -24,6 +22,9 @@ const App = () => {
 
   return (
     <>
+
+      {showLogin && <Login setShowLogin={setShowLogin}/>}
+      
       {!isOwnerPath && <Navbar setShowLogin={setShowLogin}/>}
 
       <Routes>
@@ -38,25 +39,6 @@ const App = () => {
           <Route path='manage-bookings' element={<ManageBookings />}/>
         </Route>
       </Routes>
-
-      {!isOwnerPath && <Footer />}
-
-      {/* ⚡ LOGIN MODAL (visible when showLogin = true) */}
-      {showLogin && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <Login 
-            title="User Login"
-            linkTo="/signup"
-            mode={authMode}               
-            setMode={setAuthMode}
-            onClose={() => setShowLogin(false)}
-            onSubmit={(email, pass) => {
-              console.log("Login:", email, pass)
-              setShowLogin(false)
-            }}
-          />
-        </div>
-      )}
     </>
   )
 }

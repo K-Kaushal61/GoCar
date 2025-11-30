@@ -1,88 +1,70 @@
-import React from "react";
-import TitleOwner from "../../components/owner/TitleOwner";
-import { assets, dummyCarData } from "../../assets/assets";
+import React, { useState, useEffect } from "react";
+import { assets, dummyCarData } from "../../assets/assets.js"
+import TitleOwner from "../../components/owner/TitleOwner.jsx";
 
 const ManageCars = () => {
-  const cars = dummyCarData;
 
+  const currency = import.meta.env.VITE_CURRENCY
+  const [cars, setCars] = useState([])
+
+  const fetchOwnerCars = async ()=> {
+    setCars(dummyCarData)
+  }
+
+  useEffect(() => {
+    fetchOwnerCars()
+  }, [])
+  
+  
   return (
-    <div className="px-4 pt-10 md:px-10 flex-1">
-      <TitleOwner
-        title="Manage Cars"
-        subTitle="View all listed cars, update their details, or remove them from the booking platform"
-      />
+    
+    <div className='px-4 pt-10 md:px-10 w-full'>
+      <TitleOwner title='Manage Cars' subTitle='View all listed cars, update their details, or remove them from the booking platform.' />
 
-      {/* Table */}
-      <div className="mt-8 w-full border border-borderColor rounded-md overflow-hidden">
+      <div className=' w-full rounded-md overflow-hidden border border-borderColor mt-6'>
+        <table className='w-full border-collapse text-left text-sm text-gray-600'>
+          <thead className='text-gray-500'>
+            <tr className=''>
+              <th className='p-3 font-medium '>Car</th>
+              <th className='p-3 font-medium max-md:hidden'>Category</th>
+              <th className='p-3 font-medium'>Price</th>
+              <th className='p-3 font-medium max-md:hidden'>Status</th>
+              <th className='p-3 font-medium'>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cars.map( (car, index)=> (
+              <tr key={index} className='border-t border-borderColor'>
 
-        {/* Header */}
-        <div className="grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr] bg-gray-50 py-3 px-4 
-                        text-sm font-medium text-gray-600 border-b border-borderColor">
-          <p>Car</p>
-          <p>Category</p>
-          <p>Price</p>
-          <p>Status</p>
-          <p className="text-center">Actions</p>
-        </div>
+                <td className='p-3 flex items-center gap-3'>
+                  <img src={car.image} alt="" className='h-12 w-12 aspect-square rounded-md object-cover'/>
+                  <div className='max-md:hidden'>
+                    <p className='font-medium'>{car.brand} {car.model}</p>
+                    <p className='text-xs text-gray-500'>{car.seating_capacity} • {car.transmission}</p>
+                  </div>
+                </td>
 
-        {/* Rows */}
-        {cars.map((car) => (
-          <div
-            key={car._id}
-            className="grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr] items-center py-5 px-4
-                       border-b border-borderColor last:border-b-0"
-          >
-            {/* Car Info */}
-            <div className="flex items-center gap-4">
-              <img
-                src={car.image}
-                alt={car.brand}
-                className="w-16 h-12 rounded-md object-cover"
-              />
-              <div>
-                <p className="font-medium">{car.brand} {car.model}</p>
-                <p className="text-gray-500 text-sm">
-                  {car.seating_capacity} seats • {car.transmission}
-                </p>
-              </div>
-            </div>
+                <td className='p-3 max-md:hidden'>{car.category}</td>
+                <td className='p-3'>{currency}{car.pricePerDay}/day</td>
 
-            {/* Category */}
-            <p className="text-gray-700">{car.category}</p>
+                <td className='p-3 max-md:hidden'>
+                  <span className={`px-3 py-1 rounded-full text-xs ${car.isAvailable ? 'bg-green-100 text-green-500' : 'bg-red-100 text-red-500'}`}>
+                    {car.isAvailable ? "Available" : "Unavailable"}
+                  </span>
+                </td>
 
-            {/* Price */}
-            <p className="font-medium">₹{car.pricePerDay}/day</p>
+                <td className='flex items-center p-3'>
+                  <img src={car.isAvailable ? assets.eye_close_icon : assets.eye_icon} alt="" className='cursor-pointer'/>
+                  <img src={assets.delete_icon} alt="" className='cursor-pointer'/>
+                </td>
 
-            {/* Status */}
-            <div>
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium
-                  ${car.isAvaliable
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                  }`}
-              >
-                {car.isAvaliable ? "Available" : "Not Available"}
-              </span>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-5 justify-center">
-              {/* View Button Bigger */}
-              <button className="hover:opacity-100 opacity-80 transition">
-                <img src={assets.eye_icon} className="w-10 h-10" alt="view" />
-              </button>
-
-              {/* Delete Button Bigger */}
-              <button className="hover:opacity-100 opacity-80 transition">
-                <img src={assets.delete_icon} className="w-10 h-10" alt="delete" />
-              </button>
-            </div>
-          </div>
-        ))}
-
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
+
   );
 };
 
