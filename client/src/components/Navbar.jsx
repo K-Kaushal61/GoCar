@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { assets, menuLinks } from '../assets/assets'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-const Navbar = ({ setShowLogin, setAuthMode }) => {
+const Navbar = ({ setShowLogin }) => {
 
     const location = useLocation() // used to identify the current path
     const [open, setOpen] = useState(false)
@@ -41,7 +41,7 @@ const Navbar = ({ setShowLogin, setAuthMode }) => {
 
                     {/* ✔ FIXED: Opens Login modal correctly */}
                     <button 
-                        onClick={() => {setShowLogin(true); setAuthMode("login");}}
+                        onClick={() => {setShowLogin(true);}}
                         className='cursor-pointer px-8 py-2 bg-primary hover:bg-primary-dull transition-all text-white rounded-lg'
                     >
                         Login
