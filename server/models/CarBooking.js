@@ -26,7 +26,7 @@ const carBookingSchema = new mongoose.Schema({
         required: true
     },
     status: {
-        type: Date,
+        type: String,
         enum: [
             "pending",
             "confirmed", 

@@ -42,7 +42,7 @@ import car_image3 from "./car_image3.png"
 import car_image4 from "./car_image4.png"
 import default_user from "./default_user.png"
 
-export const cityList = ['New York', 'Los Angeles', 'Houston', 'Chicago']
+export const cityList = ['Shimla', 'Bangalore', 'Delhi', 'Chennai', 'Mumbai']
 
 export const assets = {
     logo,

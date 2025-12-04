@@ -1,6 +1,8 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import ListedCar from "../models/listedCar.js";
+
 
 // Generate JWT Token
 const generateToken = (userId) => {
@@ -20,13 +22,13 @@ export const registerUser = async (req, res) => {
 
         const existingUser = await User.findOne({email})
         if(existingUser) {
-            return res.json({ success: true, message: "User already exists" });
+            return res.json({ success: false, message: "User already exists" });
         }
         
         const hashedPassword = await bcrypt.hash(password, 10)
         const newUser = await User.create({ name, email, password: hashedPassword });
         const token = generateToken( newUser._id.toString() );
-        res.json({ success: true, message: "User registered successfully", data: { token } });
+        res.json({ success: true, message: "User registered successfully", token });
 
 
     } catch (error) {
@@ -49,7 +51,7 @@ export const loginUser = async (req, res) => {
             return res.json({ success: false, message: "Incorrect password" });
         }
         const token = generateToken( user._id.toString() );
-        res.json({ success: true, message: "User logged in successfully", data: { token } });
+        res.json({ success: true, message: "User logged in successfully", token });
 
     } catch (error) {
         console.log(error.message);
@@ -60,11 +62,28 @@ export const loginUser = async (req, res) => {
 // Get user data using token
 export const getUserData = async (req, res) => {
     try {
-        const { user } = req;
-        res.json({  success: true, data: { user } });
+        const { user } = req;        
+        res.json({  success: true, user });
     } catch (error) {
         console.log(error.message);
         res.json({ success: false, message: "Error in fetching user data" });
         
     }
 }
+
+//Get All Cars for the Frontend
+export const getCars = async (req, res) => {
+    try {
+        const cars = await ListedCar.find({isAvailable: true})
+        res.json({
+            success: true,
+            cars
+        })
+    } catch (error) {
+        console.log(error.message);
+        res.json({
+            success: false,
+            message: error.message
+        })
+    }
+} 

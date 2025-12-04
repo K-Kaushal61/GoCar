@@ -19,6 +19,43 @@ export const changeRoleToOwner = async (req, res) => {
   }
 };
 
+//Update User Image
+export const updateImage = async (req, res) => {
+  try {
+    // multer put the file here
+    if (!req.file) {
+      return res.json({
+        success: false,
+        message: "No image file provided",
+      });
+    }
+
+    // upload buffer to Cloudinary
+    const result = await uploadBufferToCloudinary(req.file.buffer, "users"); // folder "users"
+
+    // req.user is set by protect middleware
+    const userId = req.user._id;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { image: result.secure_url }, // save Cloudinary URL
+      { new: true }
+    ).select("-password"); // optional: hide password
+
+    return res.json({
+      success: true,
+      message: "Profile image updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error in updateImage:", error);
+    return res.json({
+      success: false,
+      message: "Error while updating image",
+    });
+  }
+};
+
 // List Car (with Cloudinary image upload)
 export const listCar = async (req, res) => {
   try {
@@ -72,7 +109,7 @@ export const getOwnerCars = async (req, res)=> {
 
   try {
     const { _id } = req.user;
-    const cars = await ListedCar.find({owner: userId})
+    const cars = await ListedCar.find({owner: _id})
     res.json({
       success: true,
       cars
@@ -93,22 +130,18 @@ export const toggleCarAvailability = async (req, res)=> {
   try {
     const { _id } = req.user;
     const {carId} = req.body;
-    const car = await ListedCar.find(carId)
+    const car = await ListedCar.findById(carId)
 
     // checking owner
-    if(car.owner.toString() !== userId.toString()){
+    if(car.owner.toString() !== _id.toString()){
       return res.json({success: false, message:"Unauthorized owner", error: error.message})
     }
 
     car.isAvailable = !car.isAvailable;
     await car.save()
 
-    res.json({success: true, message:"Availability toggled"})
+    res.json({success: true, message:"Availability toggled", cars})
 
-    res.json({
-      success: true,
-      cars
-    });
   } catch (error) {
     console.log(error.message);
     res.json({
@@ -120,7 +153,6 @@ export const toggleCarAvailability = async (req, res)=> {
 }
 
 // API to delete a car
-
 export const deleteCar = async (req, res)=> {
 
   try {
