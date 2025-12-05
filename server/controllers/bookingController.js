@@ -116,7 +116,7 @@ export const getUserBookings = async (req, res)=>{
 export const getOwnerBookings = async (req, res)=>{
     
     try {
-        if(req.user.role != owner){
+        if(req.user.role != 'owner'){
             return res.json({
                 success: false,
                 message: "Not Authorized"
@@ -156,7 +156,7 @@ export const changeBookingStatus = async (req, res)=>{
         }
 
         booking.status = status;
-        await CarBooking.save();
+        await booking.save();
 
         res.json({
             success: true,
